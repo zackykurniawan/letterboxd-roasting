@@ -1,7 +1,14 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: "**.letterboxd.com" },
+      { protocol: "https", hostname: "a.ltrbxd.com" },
+      { protocol: "https", hostname: "image.tmdb.org" },
+      { protocol: "https", hostname: "resizer.letterboxd.com" },
+    ],
+  },
 };
 
 export default nextConfig;
