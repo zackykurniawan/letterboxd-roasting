@@ -19,7 +19,7 @@ function delay(ms: number) {
   return new Promise<void>((r) => setTimeout(r, ms));
 }
 
-async function fetchHtml(url: string, retries = 2): Promise<string> {
+async function fetchHtml(url: string, retries = 3): Promise<string> {
   const res = await fetch(url, {
     headers: {
       "User-Agent": randomUA(),
@@ -29,6 +29,10 @@ async function fetchHtml(url: string, retries = 2): Promise<string> {
       Connection: "keep-alive",
       "Cache-Control": "no-cache",
       Pragma: "no-cache",
+      DNT: "1",
+      "Sec-CH-UA": '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
+      "Sec-CH-UA-Mobile": "?0",
+      "Sec-CH-UA-Platform": '"Windows"',
       "Sec-Fetch-Dest": "document",
       "Sec-Fetch-Mode": "navigate",
       "Sec-Fetch-Site": "none",
@@ -41,9 +45,10 @@ async function fetchHtml(url: string, retries = 2): Promise<string> {
   });
 
   if (res.status === 404) throw Object.assign(new Error("User not found"), { status: 404 });
-  if (res.status === 403 || res.status === 429) {
+  // Retry on 401 (WAF challenge), 403 (blocked), 429 (rate limited)
+  if (res.status === 401 || res.status === 403 || res.status === 429) {
     if (retries > 0) {
-      await delay(2500 + Math.random() * 1500);
+      await delay(2000 + Math.random() * 2000);
       return fetchHtml(url, retries - 1);
     }
     throw Object.assign(new Error(`HTTP ${res.status}`), { status: res.status });

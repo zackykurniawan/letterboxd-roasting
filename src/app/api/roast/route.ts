@@ -75,9 +75,16 @@ export async function POST(request: Request) {
       clearTimeout(scrapeTimeout);
 
       if (!scrapeRes.ok) {
-        const errData = await scrapeRes.json().catch(() => ({ error: "Scrape gagal" }));
+        let errMessage = "Gagal mengambil data dari Letterboxd";
+        try {
+          const errData = await scrapeRes.json();
+          errMessage = errData.error || errMessage;
+        } catch {
+          // body bukan JSON — tetap pakai pesan default
+        }
+        console.error(`[roast] Scrape failed: HTTP ${scrapeRes.status} — ${errMessage}`);
         return NextResponse.json(
-          { error: errData.error || "Gagal mengambil data dari Letterboxd" },
+          { error: errMessage },
           { status: scrapeRes.status }
         );
       }
