@@ -1,13 +1,4 @@
 {
-  "functions": {
-    "api/scrape.py": {
-      "runtime": "python3.11",
-      "maxDuration": 30
-    },
-    "src/app/api/roast/route.ts": {
-      "maxDuration": 60
-    }
-  },
   "headers": [
     {
       "source": "/api/(.*)",
